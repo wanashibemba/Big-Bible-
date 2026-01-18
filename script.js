@@ -4,10 +4,8 @@
 
 const CONFIG = {
     MAX_CHARS: 280,
-    API_BASE_URL: 'https://api.scripture.api.bible/v1',
-    // IMPORTANT: Get your free API key from https://scripture.api.bible/
-    // Replace 'YOUR_API_KEY_HERE' with your actual API key
-    API_KEY: 'JbTbOtLeQo4RjUBOHt2Ms',
+    // Using bible-api.com (free, no auth required)
+    API_BASE_URL: 'https://bible-api.com',
     DEFAULT_THEME: 'gradient-mode',
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000
@@ -98,33 +96,22 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
     showLoadingState();
 
     try {
-        // Build passage ID for API.bible format (e.g., "JHN.3.16-JHN.3.17")
-        const bookId = getBookId(book);
-        const passageId = verseStart === verseEnd
-            ? `${bookId}.${chapter}.${verseStart}`
-            : `${bookId}.${chapter}.${verseStart}-${bookId}.${chapter}.${verseEnd}`;
-
-        const url = `${CONFIG.API_BASE_URL}/bibles/${translation}/passages/${passageId}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false`;
+        // Build passage string for bible-api.com format (e.g., "john+3:16-17")
+        const passage = `${book}+${chapter}:${verseStart}-${verseEnd}`;
+        const url = `${CONFIG.API_BASE_URL}/${passage}?translation=${translation}`;
 
         console.log('Fetching URL:', url);
         console.log('Translation:', translation);
-        console.log('Passage ID:', passageId);
+        console.log('Passage:', passage);
 
         const data = await fetchWithRetry(url);
 
-        if (!data.data || !data.data.content) {
+        if (!data.verses || data.verses.length === 0) {
             throw new Error('No verses found for the selected passage');
         }
 
-        // Parse the response from API.bible
-        const verses = parseApiBibleResponse(data.data);
-
-        if (verses.length === 0) {
-            throw new Error('No verses found for the selected passage');
-        }
-
-        state.currentReference = data.data.reference;
-        state.verses = chunkVerses(verses);
+        state.currentReference = data.reference;
+        state.verses = chunkVerses(data.verses);
         state.currentIndex = 0;
 
         showReaderPage();
@@ -140,16 +127,9 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
 async function fetchWithRetry(url, attempts = CONFIG.RETRY_ATTEMPTS) {
     for (let i = 0; i < attempts; i++) {
         try {
-            const headers = {
-                'api-key': CONFIG.API_KEY
-            };
-
-            const response = await fetch(url, { headers });
+            const response = await fetch(url);
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Invalid API key. Please set your API key in the CONFIG.');
-                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
