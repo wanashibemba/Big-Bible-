@@ -7,7 +7,7 @@ const CONFIG = {
     API_BASE_URL: 'https://api.scripture.api.bible/v1',
     // IMPORTANT: Get your free API key from https://scripture.api.bible/
     // Replace 'YOUR_API_KEY_HERE' with your actual API key
-    API_KEY: 'YOUR_API_KEY_HERE',
+    API_KEY: 'JbTbOtLeQo4RjUBOHt2Ms',
     DEFAULT_THEME: 'gradient-mode',
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000
