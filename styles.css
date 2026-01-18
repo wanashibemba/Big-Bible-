@@ -481,6 +481,50 @@ body.light-mode .loading {
     text-align: right;
 }
 
+/* Light Mode Control Overrides */
+body.light-mode .control-label {
+    color: #000000;
+}
+
+body.light-mode .slider-value {
+    color: #000000;
+}
+
+body.light-mode .nav-btn {
+    color: #000000;
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+body.light-mode .nav-btn:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .formatting-controls {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .slider {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .slider::-webkit-slider-thumb {
+    background: #000000;
+}
+
+body.light-mode .slider::-moz-range-thumb {
+    background: #000000;
+}
+
+body.light-mode .slider:focus {
+    outline-color: #000000;
+}
+
+body.light-mode .nav-btn:focus {
+    outline-color: #000000;
+}
+
 /* ==========================================
    ANIMATIONS
    ========================================== */
