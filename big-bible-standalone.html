@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Bible - Scripture Projector</title>
+    <style>
+        /* COPY ALL CSS FROM styles.css */
+/* ==========================================
+   RESET & BASE STYLES
+   ========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.5s ease;
+}
+
+/* ==========================================
+   THEME STYLES
+   ========================================== */
+
+body.gradient-mode {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.dark-mode {
+    background: #1a1a1a;
+}
+
+body.light-mode {
+    background: #ffffff;
+}
+
+/* ==========================================
+   HOME PAGE
+   ========================================== */
+
+.home-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    margin-bottom: 4rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 900;
+    color: white;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    transition: color 0.5s ease;
+}
+
+.hero p {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    transition: color 0.5s ease;
+}
+
+body.light-mode .hero h1,
+body.light-mode .hero p {
+    color: #000000;
+}
+
+/* Selection Card */
+.selection-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 100%;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+/* ==========================================
+   THEME SELECTOR
+   ========================================== */
+
+.theme-selector {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.theme-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.theme-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.theme-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.theme-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.theme-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+/* ==========================================
+   FORM STYLES
+   ========================================== */
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+select:hover,
+input:hover {
+    border-color: #cbd5e0;
+}
+
+.verse-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: inherit;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+/* ==========================================
+   READER PAGE
+   ========================================== */
+
+.reader-page {
+    display: none;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.reader-page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.verse-container-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    padding: 3rem;
+    min-height: 0;
+    margin-bottom: 140px;
+}
+
+#verseContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+}
+
+/* Verse Display */
+.verse-display {
+    color: white;
+    font-size: 4.5rem;
+    line-height: 1.6;
+    max-width: 1400px;
+    width: 100%;
+    font-weight: 900;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.reference {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.8rem;
+    font-weight: 400;
+    max-width: 1400px;
+    width: 100%;
+    text-align: right;
+    transition: color 0.5s ease;
+}
+
+/* Theme-specific verse styles */
+body.dark-mode .verse-display {
+    color: white;
+}
+
+body.dark-mode .reference {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+body.light-mode .verse-display {
+    color: #000000;
+    text-shadow: none;
+}
+
+body.light-mode .reference {
+    color: #000000;
+}
+
+body.gradient-mode .verse-display {
+    color: white;
+}
+
+body.gradient-mode .reference {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Loading State */
+.loading {
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+}
+
+body.light-mode .loading {
+    color: #000000;
+}
+
+/* ==========================================
+   CONTROLS
+   ========================================== */
+
+.controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.5rem;
+    align-items: center;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    z-index: 1000;
+}
+
+#prevBtn {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.formatting-controls {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    align-items: center;
+    justify-content: center;
+}
+
+#nextBtn {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+#homeBtn {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: center;
+    width: auto;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.nav-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+.nav-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Control Groups */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 110px;
+}
+
+.control-label {
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+/* Sliders */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.slider:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+.slider-value {
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+    .selection-card {
+        padding: 2rem;
+    }
+
+    .verse-display {
+        font-size: clamp(2rem, 8vw, 4.5rem);
+    }
+
+    .reference {
+        font-size: clamp(1rem, 4vw, 1.8rem);
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 0.5rem;
+        max-width: 100%;
+    }
+
+    #prevBtn,
+    #nextBtn,
+    #homeBtn {
+        grid-column: 1;
+    }
+
+    #prevBtn {
+        grid-row: 1;
+    }
+
+    .formatting-controls {
+        grid-row: 2;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    #nextBtn {
+        grid-row: 3;
+    }
+
+    #homeBtn {
+        grid-row: 4;
+    }
+
+    .nav-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .verse-container-wrapper {
+        margin-bottom: 280px;
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-buttons {
+        flex-direction: column;
+    }
+
+    .theme-btn {
+        width: 100%;
+    }
+
+    .verse-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================
+   PRINT STYLES
+   ========================================== */
+
+@media print {
+    .controls,
+    .theme-selector,
+    .submit-btn {
+        display: none;
+    }
+
+    .verse-display,
+    .reference {
+        color: #000000;
+        text-shadow: none;
+    }
+
+    body {
+        background: white;
+    }
+}
+    </style>
+</head>
+<body class="gradient-mode">
+    <!-- Home Page -->
+    <main class="home-page" id="homePage">
+        <div class="hero">
+            <h1>Hello</h1>
+            <p>Welcome to Big Bible</p>
+        </div>
+
+        <div class="selection-card">
+            <!-- Theme Selector -->
+            <div class="theme-selector">
+                <span class="theme-label">Theme</span>
+                <div class="theme-buttons" role="group" aria-label="Theme selection">
+                    <button type="button" class="theme-btn" data-theme="dark-mode" aria-label="Dark theme">Dark</button>
+                    <button type="button" class="theme-btn" data-theme="light-mode" aria-label="Light theme">Light</button>
+                    <button type="button" class="theme-btn active" data-theme="gradient-mode" aria-label="Gradient theme">Gradient</button>
+                </div>
+            </div>
+
+            <!-- Scripture Selection Form -->
+            <form id="bibleForm" aria-label="Scripture selection form">
+                <div class="form-group">
+                    <label for="translation">Translation</label>
+                    <select id="translation" required aria-required="true">
+                        <option value="web" selected>World English Bible (WEB)</option>
+                        <option value="kjv">King James Version (KJV)</option>
+                        <option value="bbe">Bible in Basic English (BBE)</option>
+                        <option value="asv">American Standard Version (ASV)</option>
+                        <option value="ylt">Young's Literal Translation (YLT)</option>
+                        <option value="webbe">World English Bible, British Edition</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="book">Book</label>
+                    <select id="book" required aria-required="true">
+                        <!-- Old Testament -->
+                        <optgroup label="Old Testament">
+                            <option value="Genesis">Genesis</option>
+                            <option value="Exodus">Exodus</option>
+                            <option value="Leviticus">Leviticus</option>
+                            <option value="Numbers">Numbers</option>
+                            <option value="Deuteronomy">Deuteronomy</option>
+                            <option value="Joshua">Joshua</option>
+                            <option value="Judges">Judges</option>
+                            <option value="Ruth">Ruth</option>
+                            <option value="1Samuel">1 Samuel</option>
+                            <option value="2Samuel">2 Samuel</option>
+                            <option value="1Kings">1 Kings</option>
+                            <option value="2Kings">2 Kings</option>
+                            <option value="1Chronicles">1 Chronicles</option>
+                            <option value="2Chronicles">2 Chronicles</option>
+                            <option value="Ezra">Ezra</option>
+                            <option value="Nehemiah">Nehemiah</option>
+                            <option value="Esther">Esther</option>
+                            <option value="Job">Job</option>
+                            <option value="Psalms">Psalms</option>
+                            <option value="Proverbs">Proverbs</option>
+                            <option value="Ecclesiastes">Ecclesiastes</option>
+                            <option value="SongofSolomon">Song of Solomon</option>
+                            <option value="Isaiah">Isaiah</option>
+                            <option value="Jeremiah">Jeremiah</option>
+                            <option value="Lamentations">Lamentations</option>
+                            <option value="Ezekiel">Ezekiel</option>
+                            <option value="Daniel">Daniel</option>
+                            <option value="Hosea">Hosea</option>
+                            <option value="Joel">Joel</option>
+                            <option value="Amos">Amos</option>
+                            <option value="Obadiah">Obadiah</option>
+                            <option value="Jonah">Jonah</option>
+                            <option value="Micah">Micah</option>
+                            <option value="Nahum">Nahum</option>
+                            <option value="Habakkuk">Habakkuk</option>
+                            <option value="Zephaniah">Zephaniah</option>
+                            <option value="Haggai">Haggai</option>
+                            <option value="Zechariah">Zechariah</option>
+                            <option value="Malachi">Malachi</option>
+                        </optgroup>
+
+                        <!-- New Testament -->
+                        <optgroup label="New Testament">
+                            <option value="Matthew">Matthew</option>
+                            <option value="Mark">Mark</option>
+                            <option value="Luke">Luke</option>
+                            <option value="John" selected>John</option>
+                            <option value="Acts">Acts</option>
+                            <option value="Romans">Romans</option>
+                            <option value="1Corinthians">1 Corinthians</option>
+                            <option value="2Corinthians">2 Corinthians</option>
+                            <option value="Galatians">Galatians</option>
+                            <option value="Ephesians">Ephesians</option>
+                            <option value="Philippians">Philippians</option>
+                            <option value="Colossians">Colossians</option>
+                            <option value="1Thessalonians">1 Thessalonians</option>
+                            <option value="2Thessalonians">2 Thessalonians</option>
+                            <option value="1Timothy">1 Timothy</option>
+                            <option value="2Timothy">2 Timothy</option>
+                            <option value="Titus">Titus</option>
+                            <option value="Philemon">Philemon</option>
+                            <option value="Hebrews">Hebrews</option>
+                            <option value="James">James</option>
+                            <option value="1Peter">1 Peter</option>
+                            <option value="2Peter">2 Peter</option>
+                            <option value="1John">1 John</option>
+                            <option value="2John">2 John</option>
+                            <option value="3John">3 John</option>
+                            <option value="Jude">Jude</option>
+                            <option value="Revelation">Revelation</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="chapter">Chapter</label>
+                    <input type="number" id="chapter" min="1" value="3" required aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label>Verses</label>
+                    <div class="verse-inputs">
+                        <input type="number" id="verseStart" placeholder="From" min="1" value="16" required aria-required="true" aria-label="Starting verse">
+                        <input type="number" id="verseEnd" placeholder="To" min="1" value="17" required aria-required="true" aria-label="Ending verse">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Display Scripture</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Reader Page -->
+    <div class="reader-page" id="readerPage" role="main" aria-live="polite">
+        <div class="verse-container-wrapper">
+            <div id="verseContainer" aria-live="polite" aria-atomic="true"></div>
+        </div>
+
+        <nav class="controls" aria-label="Scripture navigation and formatting controls">
+            <button class="nav-btn" id="prevBtn" aria-label="Previous verse">
+                <span aria-hidden="true">←</span> Previous
+            </button>
+
+            <div class="formatting-controls" role="group" aria-label="Text formatting controls">
+                <div class="control-group">
+                    <label class="control-label" for="fontSizeSlider">Font Size</label>
+                    <div class="slider-container">
+                        <input
+                            type="range"
+                            min="2"
+                            max="6"
+                            step="0.5"
+                            value="4.5"
+                            class="slider"
+                            id="fontSizeSlider"
+                            aria-label="Adjust font size"
+                            aria-valuemin="2"
+                            aria-valuemax="6"
+                            aria-valuenow="4.5"
+                        >
+                        <span class="slider-value" id="fontSizeValue" aria-live="polite">4.5rem</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="fontWeightSlider">Font Weight</label>
+                    <div class="slider-container">
+                        <input
+                            type="range"
+                            min="100"
+                            max="900"
+                            step="100"
+                            value="900"
+                            class="slider"
+                            id="fontWeightSlider"
+                            aria-label="Adjust font weight"
+                            aria-valuemin="100"
+                            aria-valuemax="900"
+                            aria-valuenow="900"
+                        >
+                        <span class="slider-value" id="fontWeightValue" aria-live="polite">900</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-btn" id="nextBtn" aria-label="Next verse">
+                Next <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="nav-btn" id="homeBtn" aria-label="Return to home">Home</button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+// ==========================================
+// CONSTANTS & CONFIGURATION
+// ==========================================
+
+const CONFIG = {
+    MAX_CHARS: 280,
+    API_BASE_URL: 'https://bible-api.com',
+    DEFAULT_THEME: 'gradient-mode',
+    RETRY_ATTEMPTS: 3,
+    RETRY_DELAY: 1000
+};
+
+// ==========================================
+// STATE MANAGEMENT
+// ==========================================
+
+const state = {
+    verses: [],
+    currentIndex: 0,
+    currentReference: '',
+    currentTheme: CONFIG.DEFAULT_THEME,
+    isLoading: false
+};
+
+// ==========================================
+// DOM ELEMENTS
+// ==========================================
+
+const elements = {
+    // Pages
+    homePage: document.getElementById('homePage'),
+    readerPage: document.getElementById('readerPage'),
+
+    // Form elements
+    form: document.getElementById('bibleForm'),
+    translation: document.getElementById('translation'),
+    book: document.getElementById('book'),
+    chapter: document.getElementById('chapter'),
+    verseStart: document.getElementById('verseStart'),
+    verseEnd: document.getElementById('verseEnd'),
+
+    // Display elements
+    verseContainer: document.getElementById('verseContainer'),
+
+    // Navigation buttons
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    homeBtn: document.getElementById('homeBtn'),
+
+    // Formatting controls
+    fontSizeSlider: document.getElementById('fontSizeSlider'),
+    fontSizeValue: document.getElementById('fontSizeValue'),
+    fontWeightSlider: document.getElementById('fontWeightSlider'),
+    fontWeightValue: document.getElementById('fontWeightValue'),
+
+    // Theme buttons
+    themeButtons: document.querySelectorAll('.theme-btn')
+};
+
+// ==========================================
+// THEME MANAGEMENT
+// ==========================================
+
+function initTheme() {
+    document.body.classList.add(CONFIG.DEFAULT_THEME);
+
+    elements.themeButtons.forEach(btn => {
+        btn.addEventListener('click', handleThemeChange);
+    });
+}
+
+function handleThemeChange(event) {
+    const theme = event.target.dataset.theme;
+
+    // Remove all theme classes
+    document.body.classList.remove('dark-mode', 'light-mode', 'gradient-mode');
+
+    // Add selected theme
+    document.body.classList.add(theme);
+    state.currentTheme = theme;
+
+    // Update button states
+    elements.themeButtons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+// ==========================================
+// SCRIPTURE LOADING
+// ==========================================
+
+async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
+    if (state.isLoading) return;
+
+    state.isLoading = true;
+    showLoadingState();
+
+    try {
+        const passage = `${book}+${chapter}:${verseStart}-${verseEnd}`;
+        const url = `${CONFIG.API_BASE_URL}/${passage}?translation=${translation}`;
+
+        const data = await fetchWithRetry(url);
+
+        if (!data.verses || data.verses.length === 0) {
+            throw new Error('No verses found for the selected passage');
+        }
+
+        state.currentReference = data.reference;
+        state.verses = chunkVerses(data.verses);
+        state.currentIndex = 0;
+
+        showReaderPage();
+        displayVerse();
+
+    } catch (error) {
+        handleError(error);
+    } finally {
+        state.isLoading = false;
+    }
+}
+
+async function fetchWithRetry(url, attempts = CONFIG.RETRY_ATTEMPTS) {
+    for (let i = 0; i < attempts; i++) {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+
+        } catch (error) {
+            if (i === attempts - 1) throw error;
+
+            await new Promise(resolve =>
+                setTimeout(resolve, CONFIG.RETRY_DELAY * (i + 1))
+            );
+        }
+    }
+}
+
+// ==========================================
+// VERSE CHUNKING
+// ==========================================
+
+function chunkVerses(verseArray) {
+    const chunks = [];
+    let currentChunk = '';
+    let currentVerses = [];
+
+    verseArray.forEach(verse => {
+        const verseText = verse.text.trim();
+        const verseNum = verse.verse;
+
+        // Check if adding this verse would exceed MAX_CHARS
+        if ((currentChunk + verseText).length > CONFIG.MAX_CHARS && currentChunk.length > 0) {
+            chunks.push({
+                text: currentChunk.trim(),
+                verses: [...currentVerses]
+            });
+            currentChunk = verseText + ' ';
+            currentVerses = [verseNum];
+        } else {
+            currentChunk += verseText + ' ';
+            currentVerses.push(verseNum);
+        }
+    });
+
+    // Add the last chunk if it exists
+    if (currentChunk.trim()) {
+        chunks.push({
+            text: currentChunk.trim(),
+            verses: [...currentVerses]
+        });
+    }
+
+    return chunks;
+}
+
+// ==========================================
+// DISPLAY FUNCTIONS
+// ==========================================
+
+function displayVerse() {
+    const chunk = state.verses[state.currentIndex];
+
+    if (!chunk) {
+        handleError(new Error('No verse chunk available to display'));
+        return;
+    }
+
+    const verseRef = formatVerseReference(chunk.verses);
+
+    elements.verseContainer.innerHTML = `
+        <div class="verse-display">${escapeHtml(chunk.text)}</div>
+        <div class="reference">${escapeHtml(state.currentReference)} (${verseRef})</div>
+    `;
+
+    // Apply current formatting settings
+    applyFormatting();
+    updateNavigationButtons();
+
+    // Update ARIA attributes
+    elements.fontSizeSlider.setAttribute('aria-valuenow', elements.fontSizeSlider.value);
+    elements.fontWeightSlider.setAttribute('aria-valuenow', elements.fontWeightSlider.value);
+}
+
+function formatVerseReference(verses) {
+    if (verses.length === 1) {
+        return `verse ${verses[0]}`;
+    }
+    return `verses ${verses[0]}-${verses[verses.length - 1]}`;
+}
+
+function applyFormatting() {
+    const verseDisplay = elements.verseContainer.querySelector('.verse-display');
+
+    if (verseDisplay) {
+        verseDisplay.style.fontSize = `${elements.fontSizeSlider.value}rem`;
+        verseDisplay.style.fontWeight = elements.fontWeightSlider.value;
+    }
+}
+
+function showLoadingState() {
+    elements.verseContainer.innerHTML = '<div class="loading">Loading scripture...</div>';
+    elements.homePage.style.display = 'none';
+    elements.readerPage.classList.add('active');
+}
+
+function showReaderPage() {
+    document.body.classList.add(state.currentTheme);
+    elements.homePage.style.display = 'none';
+    elements.readerPage.classList.add('active');
+}
+
+function showHomePage() {
+    elements.readerPage.classList.remove('active');
+    elements.homePage.style.display = 'flex';
+
+    // Ensure theme persists
+    if (!document.body.classList.contains(state.currentTheme)) {
+        document.body.className = state.currentTheme;
+    }
+}
+
+// ==========================================
+// NAVIGATION
+// ==========================================
+
+function navigatePrevious() {
+    if (state.currentIndex > 0) {
+        state.currentIndex--;
+        displayVerse();
+    }
+}
+
+function navigateNext() {
+    if (state.currentIndex < state.verses.length - 1) {
+        state.currentIndex++;
+        displayVerse();
+    }
+}
+
+function updateNavigationButtons() {
+    elements.prevBtn.disabled = state.currentIndex === 0;
+    elements.nextBtn.disabled = state.currentIndex === state.verses.length - 1;
+}
+
+// ==========================================
+// FORMATTING CONTROLS
+// ==========================================
+
+function handleFontSizeChange(event) {
+    const size = event.target.value;
+    elements.fontSizeValue.textContent = `${size}rem`;
+
+    const displays = document.querySelectorAll('.verse-display');
+    displays.forEach(display => {
+        display.style.fontSize = `${size}rem`;
+    });
+
+    // Update ARIA attribute
+    event.target.setAttribute('aria-valuenow', size);
+}
+
+function handleFontWeightChange(event) {
+    const weight = event.target.value;
+    elements.fontWeightValue.textContent = weight;
+
+    const displays = document.querySelectorAll('.verse-display');
+    displays.forEach(display => {
+        display.style.fontWeight = weight;
+    });
+
+    // Update ARIA attribute
+    event.target.setAttribute('aria-valuenow', weight);
+}
+
+// ==========================================
+// ERROR HANDLING
+// ==========================================
+
+function handleError(error) {
+    console.error('Error:', error);
+
+    const errorMessage = getErrorMessage(error);
+    elements.verseContainer.innerHTML = `
+        <div class="loading">
+            ${escapeHtml(errorMessage)}
+            <br><br>
+            <button class="nav-btn" onclick="showHomePage()">Return Home</button>
+        </div>
+    `;
+}
+
+function getErrorMessage(error) {
+    if (error.message.includes('HTTP error')) {
+        return 'Unable to connect to the Bible API. Please check your internet connection and try again.';
+    }
+
+    if (error.message.includes('No verses found')) {
+        return 'No verses found for the selected passage. Please check your selection and try again.';
+    }
+
+    return 'An error occurred while loading scripture. Please try again.';
+}
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function validateFormInputs() {
+    const chapter = parseInt(elements.chapter.value);
+    const verseStart = parseInt(elements.verseStart.value);
+    const verseEnd = parseInt(elements.verseEnd.value);
+
+    if (chapter < 1) {
+        alert('Chapter must be at least 1');
+        return false;
+    }
+
+    if (verseStart < 1 || verseEnd < 1) {
+        alert('Verses must be at least 1');
+        return false;
+    }
+
+    if (verseStart > verseEnd) {
+        alert('Starting verse must be less than or equal to ending verse');
+        return false;
+    }
+
+    return true;
+}
+
+// ==========================================
+// KEYBOARD SHORTCUTS
+// ==========================================
+
+function handleKeyboardShortcuts(event) {
+    if (!elements.readerPage.classList.contains('active')) return;
+
+    switch(event.key) {
+        case 'ArrowLeft':
+            event.preventDefault();
+            navigatePrevious();
+            break;
+        case 'ArrowRight':
+            event.preventDefault();
+            navigateNext();
+            break;
+        case 'Escape':
+            event.preventDefault();
+            showHomePage();
+            break;
+        case 'Home':
+            event.preventDefault();
+            if (state.verses.length > 0) {
+                state.currentIndex = 0;
+                displayVerse();
+            }
+            break;
+        case 'End':
+            event.preventDefault();
+            if (state.verses.length > 0) {
+                state.currentIndex = state.verses.length - 1;
+                displayVerse();
+            }
+            break;
+    }
+}
+
+// ==========================================
+// EVENT LISTENERS
+// ==========================================
+
+function initEventListeners() {
+    // Form submission
+    elements.form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (!validateFormInputs()) return;
+
+        const translation = elements.translation.value;
+        const book = elements.book.value;
+        const chapter = elements.chapter.value;
+        const verseStart = elements.verseStart.value;
+        const verseEnd = elements.verseEnd.value;
+
+        await loadScripture(translation, book, chapter, verseStart, verseEnd);
+    });
+
+    // Navigation buttons
+    elements.prevBtn.addEventListener('click', navigatePrevious);
+    elements.nextBtn.addEventListener('click', navigateNext);
+    elements.homeBtn.addEventListener('click', showHomePage);
+
+    // Formatting controls
+    elements.fontSizeSlider.addEventListener('input', handleFontSizeChange);
+    elements.fontWeightSlider.addEventListener('input', handleFontWeightChange);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+}
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+
+function init() {
+    initTheme();
+    initEventListeners();
+    console.log('Big Bible initialized successfully');
+}
+
+// Start the application when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+// Expose necessary functions to global scope for inline handlers
+window.showHomePage = showHomePage;
+    </script>
+</body>
+</html>
