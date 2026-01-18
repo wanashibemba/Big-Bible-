@@ -5,7 +5,7 @@ A beautiful, responsive Bible verse projector designed for presentations, worshi
 ## Features
 
 ### Core Functionality
-- **Multiple Bible Translations**: Support for 6 different translations including KJV, WEB, BBE, ASV, YLT, and WEBBE
+- **2500+ Bible Translations**: Powered by API.bible, includes popular translations like NIV, ESV, NLT, NKJV, CSB, NASB, and more!
 - **Flexible Verse Selection**: Choose any book, chapter, and verse range
 - **Smart Text Chunking**: Automatically splits long passages into readable chunks (max 280 characters)
 - **Navigation Controls**: Easy navigation between verse chunks with Previous/Next buttons
@@ -39,6 +39,16 @@ A beautiful, responsive Bible verse projector designed for presentations, worshi
 ### Prerequisites
 - A modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection (for fetching Bible verses)
+- **Free API key from API.bible** - [Get yours here](https://scripture.api.bible/) (takes 2 minutes!)
+
+### ⚠️ IMPORTANT: API Key Setup Required
+
+Before using the app, you need to:
+
+1. **Get a free API key** from [scripture.api.bible](https://scripture.api.bible/)
+2. **Add the key to your app** - See detailed instructions in [API_SETUP.md](API_SETUP.md)
+
+**Quick setup**: Open `script.js`, find `API_KEY: 'YOUR_API_KEY_HERE'`, and replace it with your actual key.
 
 ### Installation
 

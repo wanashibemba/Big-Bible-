@@ -4,7 +4,10 @@
 
 const CONFIG = {
     MAX_CHARS: 280,
-    API_BASE_URL: 'https://bible-api.com',
+    API_BASE_URL: 'https://api.scripture.api.bible/v1',
+    // IMPORTANT: Get your free API key from https://scripture.api.bible/
+    // Replace 'YOUR_API_KEY_HERE' with your actual API key
+    API_KEY: 'YOUR_API_KEY_HERE',
     DEFAULT_THEME: 'gradient-mode',
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000
@@ -95,17 +98,29 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
     showLoadingState();
 
     try {
-        const passage = `${book}+${chapter}:${verseStart}-${verseEnd}`;
-        const url = `${CONFIG.API_BASE_URL}/${passage}?translation=${translation}`;
+        // Build passage ID for API.bible format (e.g., "JHN.3.16-JHN.3.17")
+        const bookId = getBookId(book);
+        const passageId = verseStart === verseEnd
+            ? `${bookId}.${chapter}.${verseStart}`
+            : `${bookId}.${chapter}.${verseStart}-${bookId}.${chapter}.${verseEnd}`;
+
+        const url = `${CONFIG.API_BASE_URL}/bibles/${translation}/passages/${passageId}`;
 
         const data = await fetchWithRetry(url);
 
-        if (!data.verses || data.verses.length === 0) {
+        if (!data.data || !data.data.content) {
             throw new Error('No verses found for the selected passage');
         }
 
-        state.currentReference = data.reference;
-        state.verses = chunkVerses(data.verses);
+        // Parse the response from API.bible
+        const verses = parseApiBibleResponse(data.data);
+
+        if (verses.length === 0) {
+            throw new Error('No verses found for the selected passage');
+        }
+
+        state.currentReference = data.data.reference;
+        state.verses = chunkVerses(verses);
         state.currentIndex = 0;
 
         showReaderPage();
@@ -121,9 +136,16 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
 async function fetchWithRetry(url, attempts = CONFIG.RETRY_ATTEMPTS) {
     for (let i = 0; i < attempts; i++) {
         try {
-            const response = await fetch(url);
+            const headers = {
+                'api-key': CONFIG.API_KEY
+            };
+
+            const response = await fetch(url, { headers });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Invalid API key. Please set your API key in the CONFIG.');
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -137,6 +159,42 @@ async function fetchWithRetry(url, attempts = CONFIG.RETRY_ATTEMPTS) {
             );
         }
     }
+}
+
+// Parse API.bible response into verse objects
+function parseApiBibleResponse(data) {
+    const verses = [];
+    const text = data.content.replace(/<[^>]*>/g, '').trim(); // Strip HTML tags
+
+    // For simplicity, create a single verse object with the full text
+    // API.bible doesn't always return individual verses, so we treat the passage as one unit
+    verses.push({
+        text: text,
+        verse: data.reference
+    });
+
+    return verses;
+}
+
+// Get USFM book ID for API.bible
+function getBookId(bookName) {
+    const bookMap = {
+        'Genesis': 'GEN', 'Exodus': 'EXO', 'Leviticus': 'LEV', 'Numbers': 'NUM', 'Deuteronomy': 'DEU',
+        'Joshua': 'JOS', 'Judges': 'JDG', 'Ruth': 'RUT', '1Samuel': '1SA', '2Samuel': '2SA',
+        '1Kings': '1KI', '2Kings': '2KI', '1Chronicles': '1CH', '2Chronicles': '2CH', 'Ezra': 'EZR',
+        'Nehemiah': 'NEH', 'Esther': 'EST', 'Job': 'JOB', 'Psalms': 'PSA', 'Proverbs': 'PRO',
+        'Ecclesiastes': 'ECC', 'SongofSolomon': 'SNG', 'Isaiah': 'ISA', 'Jeremiah': 'JER',
+        'Lamentations': 'LAM', 'Ezekiel': 'EZK', 'Daniel': 'DAN', 'Hosea': 'HOS', 'Joel': 'JOL',
+        'Amos': 'AMO', 'Obadiah': 'OBA', 'Jonah': 'JON', 'Micah': 'MIC', 'Nahum': 'NAM',
+        'Habakkuk': 'HAB', 'Zephaniah': 'ZEP', 'Haggai': 'HAG', 'Zechariah': 'ZEC', 'Malachi': 'MAL',
+        'Matthew': 'MAT', 'Mark': 'MRK', 'Luke': 'LUK', 'John': 'JHN', 'Acts': 'ACT',
+        'Romans': 'ROM', '1Corinthians': '1CO', '2Corinthians': '2CO', 'Galatians': 'GAL',
+        'Ephesians': 'EPH', 'Philippians': 'PHP', 'Colossians': 'COL', '1Thessalonians': '1TH',
+        '2Thessalonians': '2TH', '1Timothy': '1TI', '2Timothy': '2TI', 'Titus': 'TIT',
+        'Philemon': 'PHM', 'Hebrews': 'HEB', 'James': 'JAS', '1Peter': '1PE', '2Peter': '2PE',
+        '1John': '1JN', '2John': '2JN', '3John': '3JN', 'Jude': 'JUD', 'Revelation': 'REV'
+    };
+    return bookMap[bookName] || bookName.toUpperCase().substring(0, 3);
 }
 
 // ==========================================
