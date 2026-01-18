@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A beautiful Bible verse projector for displaying scripture in presentations and worship services">
+    <meta name="keywords" content="bible, scripture, projector, verses, worship">
+    <title>Big Bible - Scripture Projector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-mode">
+    <!-- Home Page -->
+    <main class="home-page" id="homePage">
+        <div class="hero">
+            <h1>Hello</h1>
+            <p>Welcome to Big Bible</p>
+        </div>
+
+        <div class="selection-card">
+            <!-- Theme Selector -->
+            <div class="theme-selector">
+                <span class="theme-label">Theme</span>
+                <div class="theme-buttons" role="group" aria-label="Theme selection">
+                    <button type="button" class="theme-btn" data-theme="dark-mode" aria-label="Dark theme">Dark</button>
+                    <button type="button" class="theme-btn" data-theme="light-mode" aria-label="Light theme">Light</button>
+                    <button type="button" class="theme-btn active" data-theme="gradient-mode" aria-label="Gradient theme">Gradient</button>
+                </div>
+            </div>
+
+            <!-- Scripture Selection Form -->
+            <form id="bibleForm" aria-label="Scripture selection form">
+                <div class="form-group">
+                    <label for="translation">Translation</label>
+                    <select id="translation" required aria-required="true">
+                        <option value="web" selected>World English Bible (WEB)</option>
+                        <option value="kjv">King James Version (KJV)</option>
+                        <option value="bbe">Bible in Basic English (BBE)</option>
+                        <option value="asv">American Standard Version (ASV)</option>
+                        <option value="ylt">Young's Literal Translation (YLT)</option>
+                        <option value="webbe">World English Bible, British Edition</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="book">Book</label>
+                    <select id="book" required aria-required="true">
+                        <!-- Old Testament -->
+                        <optgroup label="Old Testament">
+                            <option value="Genesis">Genesis</option>
+                            <option value="Exodus">Exodus</option>
+                            <option value="Leviticus">Leviticus</option>
+                            <option value="Numbers">Numbers</option>
+                            <option value="Deuteronomy">Deuteronomy</option>
+                            <option value="Joshua">Joshua</option>
+                            <option value="Judges">Judges</option>
+                            <option value="Ruth">Ruth</option>
+                            <option value="1Samuel">1 Samuel</option>
+                            <option value="2Samuel">2 Samuel</option>
+                            <option value="1Kings">1 Kings</option>
+                            <option value="2Kings">2 Kings</option>
+                            <option value="1Chronicles">1 Chronicles</option>
+                            <option value="2Chronicles">2 Chronicles</option>
+                            <option value="Ezra">Ezra</option>
+                            <option value="Nehemiah">Nehemiah</option>
+                            <option value="Esther">Esther</option>
+                            <option value="Job">Job</option>
+                            <option value="Psalms">Psalms</option>
+                            <option value="Proverbs">Proverbs</option>
+                            <option value="Ecclesiastes">Ecclesiastes</option>
+                            <option value="SongofSolomon">Song of Solomon</option>
+                            <option value="Isaiah">Isaiah</option>
+                            <option value="Jeremiah">Jeremiah</option>
+                            <option value="Lamentations">Lamentations</option>
+                            <option value="Ezekiel">Ezekiel</option>
+                            <option value="Daniel">Daniel</option>
+                            <option value="Hosea">Hosea</option>
+                            <option value="Joel">Joel</option>
+                            <option value="Amos">Amos</option>
+                            <option value="Obadiah">Obadiah</option>
+                            <option value="Jonah">Jonah</option>
+                            <option value="Micah">Micah</option>
+                            <option value="Nahum">Nahum</option>
+                            <option value="Habakkuk">Habakkuk</option>
+                            <option value="Zephaniah">Zephaniah</option>
+                            <option value="Haggai">Haggai</option>
+                            <option value="Zechariah">Zechariah</option>
+                            <option value="Malachi">Malachi</option>
+                        </optgroup>
+
+                        <!-- New Testament -->
+                        <optgroup label="New Testament">
+                            <option value="Matthew">Matthew</option>
+                            <option value="Mark">Mark</option>
+                            <option value="Luke">Luke</option>
+                            <option value="John" selected>John</option>
+                            <option value="Acts">Acts</option>
+                            <option value="Romans">Romans</option>
+                            <option value="1Corinthians">1 Corinthians</option>
+                            <option value="2Corinthians">2 Corinthians</option>
+                            <option value="Galatians">Galatians</option>
+                            <option value="Ephesians">Ephesians</option>
+                            <option value="Philippians">Philippians</option>
+                            <option value="Colossians">Colossians</option>
+                            <option value="1Thessalonians">1 Thessalonians</option>
+                            <option value="2Thessalonians">2 Thessalonians</option>
+                            <option value="1Timothy">1 Timothy</option>
+                            <option value="2Timothy">2 Timothy</option>
+                            <option value="Titus">Titus</option>
+                            <option value="Philemon">Philemon</option>
+                            <option value="Hebrews">Hebrews</option>
+                            <option value="James">James</option>
+                            <option value="1Peter">1 Peter</option>
+                            <option value="2Peter">2 Peter</option>
+                            <option value="1John">1 John</option>
+                            <option value="2John">2 John</option>
+                            <option value="3John">3 John</option>
+                            <option value="Jude">Jude</option>
+                            <option value="Revelation">Revelation</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="chapter">Chapter</label>
+                    <input type="number" id="chapter" min="1" value="3" required aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label>Verses</label>
+                    <div class="verse-inputs">
+                        <input type="number" id="verseStart" placeholder="From" min="1" value="16" required aria-required="true" aria-label="Starting verse">
+                        <input type="number" id="verseEnd" placeholder="To" min="1" value="17" required aria-required="true" aria-label="Ending verse">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Display Scripture</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Reader Page -->
+    <div class="reader-page" id="readerPage" role="main" aria-live="polite">
+        <div class="verse-container-wrapper">
+            <div id="verseContainer" aria-live="polite" aria-atomic="true"></div>
+        </div>
+
+        <nav class="controls" aria-label="Scripture navigation and formatting controls">
+            <button class="nav-btn" id="prevBtn" aria-label="Previous verse">
+                <span aria-hidden="true">←</span> Previous
+            </button>
+
+            <div class="formatting-controls" role="group" aria-label="Text formatting controls">
+                <div class="control-group">
+                    <label class="control-label" for="fontSizeSlider">Font Size</label>
+                    <div class="slider-container">
+                        <input
+                            type="range"
+                            min="2"
+                            max="6"
+                            step="0.5"
+                            value="4.5"
+                            class="slider"
+                            id="fontSizeSlider"
+                            aria-label="Adjust font size"
+                            aria-valuemin="2"
+                            aria-valuemax="6"
+                            aria-valuenow="4.5"
+                        >
+                        <span class="slider-value" id="fontSizeValue" aria-live="polite">4.5rem</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="fontWeightSlider">Font Weight</label>
+                    <div class="slider-container">
+                        <input
+                            type="range"
+                            min="100"
+                            max="900"
+                            step="100"
+                            value="900"
+                            class="slider"
+                            id="fontWeightSlider"
+                            aria-label="Adjust font weight"
+                            aria-valuemin="100"
+                            aria-valuemax="900"
+                            aria-valuenow="900"
+                        >
+                        <span class="slider-value" id="fontWeightValue" aria-live="polite">900</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-btn" id="nextBtn" aria-label="Next verse">
+                Next <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="nav-btn" id="homeBtn" aria-label="Return to home">Home</button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
