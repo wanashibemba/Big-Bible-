@@ -964,7 +964,7 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
             ? `${bookId}.${chapter}.${verseStart}`
             : `${bookId}.${chapter}.${verseStart}-${bookId}.${chapter}.${verseEnd}`;
 
-        const url = `${CONFIG.API_BASE_URL}/bibles/${translation}/passages/${passageId}`;
+        const url = `${CONFIG.API_BASE_URL}/bibles/${translation}/passages/${passageId}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false`;
 
         const data = await fetchWithRetry(url);
 
