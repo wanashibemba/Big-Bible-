@@ -106,6 +106,10 @@ async function loadScripture(translation, book, chapter, verseStart, verseEnd) {
 
         const url = `${CONFIG.API_BASE_URL}/bibles/${translation}/passages/${passageId}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false`;
 
+        console.log('Fetching URL:', url);
+        console.log('Translation:', translation);
+        console.log('Passage ID:', passageId);
+
         const data = await fetchWithRetry(url);
 
         if (!data.data || !data.data.content) {
@@ -360,11 +364,15 @@ function handleFontWeightChange(event) {
 
 function handleError(error) {
     console.error('Error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
 
     const errorMessage = getErrorMessage(error);
     elements.verseContainer.innerHTML = `
         <div class="loading">
             ${escapeHtml(errorMessage)}
+            <br><br>
+            <small style="color: rgba(255,255,255,0.7); font-size: 0.8rem;">Error: ${escapeHtml(error.message)}</small>
             <br><br>
             <button class="nav-btn" onclick="showHomePage()">Return Home</button>
         </div>
