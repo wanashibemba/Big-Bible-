@@ -301,6 +301,12 @@ function showReaderPage() {
 }
 
 function showHomePage() {
+    // Close projection window if in presenter mode
+    if (state.presenterMode) {
+        stopPresenterMode();
+        return;
+    }
+
     elements.readerPage.classList.remove('active');
     elements.homePage.style.display = 'flex';
 
@@ -644,7 +650,18 @@ function stopPresenterMode() {
         state.projectionWindow.close();
     }
     state.projectionWindow = null;
-    showReaderPage();
+
+    // Remove presenter mode class
+    elements.readerPage.classList.remove('presenter-mode');
+
+    // Return to home page
+    elements.readerPage.classList.remove('active');
+    elements.homePage.style.display = 'flex';
+
+    // Ensure theme persists
+    if (!document.body.classList.contains(state.currentTheme)) {
+        document.body.className = state.currentTheme;
+    }
 }
 
 function showPresenterView() {
