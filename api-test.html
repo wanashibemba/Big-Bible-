@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API.Bible Diagnostic Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 API.Bible Diagnostic Tool</h1>
+
+        <div class="info">
+            <strong>Your API Key:</strong> JbTbOtLeQo4RjUBOHt2Ms<br>
+            <strong>Test Passage:</strong> John 3:16-17 (KJV)
+        </div>
+
+        <button onclick="runTest1()">Test 1: List Bibles Endpoint</button>
+        <button onclick="runTest2()">Test 2: Get Specific Passage</button>
+        <button onclick="runTest3()">Test 3: Alternative Header Format</button>
+        <button onclick="clearResults()">Clear Results</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'JbTbOtLeQo4RjUBOHt2Ms';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(title, content, status = '') {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `
+                <h3>${title}</h3>
+                <div class="status ${status}">${content}</div>
+            `;
+            resultsDiv.appendChild(section);
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        async function runTest1() {
+            addResult('Test 1: List Bibles Endpoint', 'Testing...', 'loading');
+
+            try {
+                const response = await fetch('https://api.scripture.api.bible/v1/bibles', {
+                    headers: {
+                        'api-key': API_KEY
+                    }
+                });
+
+                const responseText = await response.text();
+
+                let result = `
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Headers:</strong><br>
+                `;
+
+                response.headers.forEach((value, key) => {
+                    result += `${key}: ${value}<br>`;
+                });
+
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    result += `<br><strong>Result:</strong> ✅ SUCCESS! Found ${data.data?.length || 0} Bibles<br>`;
+                    result += `<pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre>`;
+                    addResult('Test 1: List Bibles Endpoint', result, 'success');
+                } else {
+                    result += `<br><strong>Error:</strong><br><pre>${responseText}</pre>`;
+                    addResult('Test 1: List Bibles Endpoint', result, 'error');
+                }
+            } catch (error) {
+                addResult('Test 1: List Bibles Endpoint', `
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Stack:</strong><br><pre>${error.stack}</pre>
+                `, 'error');
+            }
+        }
+
+        async function runTest2() {
+            addResult('Test 2: Get Passage (John 3:16-17)', 'Testing...', 'loading');
+
+            try {
+                const url = 'https://api.scripture.api.bible/v1/bibles/de4e12af7f28f599-01/passages/JHN.3.16-JHN.3.17?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false';
+
+                const response = await fetch(url, {
+                    headers: {
+                        'api-key': API_KEY
+                    }
+                });
+
+                const responseText = await response.text();
+
+                let result = `
+                    <strong>URL:</strong> ${url}<br>
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Headers:</strong><br>
+                `;
+
+                response.headers.forEach((value, key) => {
+                    result += `${key}: ${value}<br>`;
+                });
+
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    result += `<br><strong>Result:</strong> ✅ SUCCESS!<br>`;
+                    result += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    addResult('Test 2: Get Passage', result, 'success');
+                } else {
+                    result += `<br><strong>Error Response:</strong><br><pre>${responseText}</pre>`;
+                    addResult('Test 2: Get Passage', result, 'error');
+                }
+            } catch (error) {
+                addResult('Test 2: Get Passage', `
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Stack:</strong><br><pre>${error.stack}</pre>
+                `, 'error');
+            }
+        }
+
+        async function runTest3() {
+            addResult('Test 3: Alternative Header Formats', 'Testing multiple header formats...', 'loading');
+
+            const headerFormats = [
+                { name: 'Standard (api-key)', headers: { 'api-key': API_KEY } },
+                { name: 'Uppercase (Api-Key)', headers: { 'Api-Key': API_KEY } },
+                { name: 'Bearer Token', headers: { 'Authorization': `Bearer ${API_KEY}` } },
+                { name: 'X-API-Key', headers: { 'X-API-Key': API_KEY } }
+            ];
+
+            for (const format of headerFormats) {
+                try {
+                    const response = await fetch('https://api.scripture.api.bible/v1/bibles', {
+                        headers: format.headers
+                    });
+
+                    const status = response.ok ? '✅' : '❌';
+                    const result = `
+                        ${status} <strong>${format.name}:</strong> ${response.status} ${response.statusText}<br>
+                        Headers sent: <pre>${JSON.stringify(format.headers, null, 2)}</pre>
+                    `;
+
+                    addResult(`Test 3: ${format.name}`, result, response.ok ? 'success' : 'error');
+                } catch (error) {
+                    addResult(`Test 3: ${format.name}`, `Error: ${error.message}`, 'error');
+                }
+
+                // Small delay between tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        // Auto-run Test 1 on load
+        window.addEventListener('load', () => {
+            setTimeout(runTest1, 1000);
+        });
+    </script>
+</body>
+</html>
