@@ -203,7 +203,106 @@
             </button>
 
             <button class="nav-btn" id="homeBtn" aria-label="Return to home">Home</button>
+            <button class="nav-btn presenter-btn" id="presenterBtn" aria-label="Start presenter mode">Presenter Mode</button>
         </nav>
+
+        <!-- Horizontal Scripture Selector for Presenter Mode -->
+        <div class="presenter-scripture-selector" id="presenterScriptureSelector">
+            <form id="presenterForm" class="horizontal-form">
+                <select id="presenterTranslation" class="compact-select" aria-label="Select translation">
+                    <optgroup label="Popular">
+                        <option value="de4e12af7f28f599-02">NIV</option>
+                        <option value="f421fe261da7624f-01">ESV</option>
+                        <option value="7142879509583d59-01">NLT</option>
+                        <option value="de4e12af7f28f599-01" selected>KJV</option>
+                        <option value="2bcf7795d310e29c-01">NKJV</option>
+                        <option value="01b29f4b342acc35-01">CSB</option>
+                        <option value="65eec8e0b60e656b-01">NASB</option>
+                    </optgroup>
+                    <optgroup label="Free">
+                        <option value="9879dbb7cfe39e4d-01">WEB</option>
+                        <option value="bba9f40183526463-01">ASV</option>
+                        <option value="06125adad2d5898a-01">BBE</option>
+                    </optgroup>
+                </select>
+
+                <select id="presenterBook" class="compact-select" aria-label="Select book">
+                    <option value="Genesis">Genesis</option>
+                    <option value="Exodus">Exodus</option>
+                    <option value="Leviticus">Leviticus</option>
+                    <option value="Numbers">Numbers</option>
+                    <option value="Deuteronomy">Deuteronomy</option>
+                    <option value="Joshua">Joshua</option>
+                    <option value="Judges">Judges</option>
+                    <option value="Ruth">Ruth</option>
+                    <option value="1Samuel">1 Samuel</option>
+                    <option value="2Samuel">2 Samuel</option>
+                    <option value="1Kings">1 Kings</option>
+                    <option value="2Kings">2 Kings</option>
+                    <option value="1Chronicles">1 Chronicles</option>
+                    <option value="2Chronicles">2 Chronicles</option>
+                    <option value="Ezra">Ezra</option>
+                    <option value="Nehemiah">Nehemiah</option>
+                    <option value="Esther">Esther</option>
+                    <option value="Job">Job</option>
+                    <option value="Psalms">Psalms</option>
+                    <option value="Proverbs">Proverbs</option>
+                    <option value="Ecclesiastes">Ecclesiastes</option>
+                    <option value="SongofSolomon">Song of Solomon</option>
+                    <option value="Isaiah">Isaiah</option>
+                    <option value="Jeremiah">Jeremiah</option>
+                    <option value="Lamentations">Lamentations</option>
+                    <option value="Ezekiel">Ezekiel</option>
+                    <option value="Daniel">Daniel</option>
+                    <option value="Hosea">Hosea</option>
+                    <option value="Joel">Joel</option>
+                    <option value="Amos">Amos</option>
+                    <option value="Obadiah">Obadiah</option>
+                    <option value="Jonah">Jonah</option>
+                    <option value="Micah">Micah</option>
+                    <option value="Nahum">Nahum</option>
+                    <option value="Habakkuk">Habakkuk</option>
+                    <option value="Zephaniah">Zephaniah</option>
+                    <option value="Haggai">Haggai</option>
+                    <option value="Zechariah">Zechariah</option>
+                    <option value="Malachi">Malachi</option>
+                    <option value="Matthew">Matthew</option>
+                    <option value="Mark">Mark</option>
+                    <option value="Luke">Luke</option>
+                    <option value="John" selected>John</option>
+                    <option value="Acts">Acts</option>
+                    <option value="Romans">Romans</option>
+                    <option value="1Corinthians">1 Corinthians</option>
+                    <option value="2Corinthians">2 Corinthians</option>
+                    <option value="Galatians">Galatians</option>
+                    <option value="Ephesians">Ephesians</option>
+                    <option value="Philippians">Philippians</option>
+                    <option value="Colossians">Colossians</option>
+                    <option value="1Thessalonians">1 Thessalonians</option>
+                    <option value="2Thessalonians">2 Thessalonians</option>
+                    <option value="1Timothy">1 Timothy</option>
+                    <option value="2Timothy">2 Timothy</option>
+                    <option value="Titus">Titus</option>
+                    <option value="Philemon">Philemon</option>
+                    <option value="Hebrews">Hebrews</option>
+                    <option value="James">James</option>
+                    <option value="1Peter">1 Peter</option>
+                    <option value="2Peter">2 Peter</option>
+                    <option value="1John">1 John</option>
+                    <option value="2John">2 John</option>
+                    <option value="3John">3 John</option>
+                    <option value="Jude">Jude</option>
+                    <option value="Revelation">Revelation</option>
+                </select>
+
+                <input type="number" id="presenterChapter" placeholder="Ch" min="1" value="3" class="compact-input" aria-label="Chapter">
+                <input type="number" id="presenterVerseStart" placeholder="From" min="1" value="16" class="compact-input" aria-label="Starting verse">
+                <input type="number" id="presenterVerseEnd" placeholder="To" min="1" value="17" class="compact-input" aria-label="Ending verse">
+
+                <button type="submit" class="compact-btn">Load</button>
+                <button type="button" class="compact-btn" id="exitPresenterBtn">Exit Presenter</button>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -629,13 +629,207 @@ body.light-mode .nav-btn:focus {
 }
 
 /* ==========================================
+   PRESENTER MODE
+   ========================================== */
+
+.presenter-btn {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: center;
+    width: auto;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.reader-page.presenter-mode .verse-container-wrapper {
+    margin-bottom: 200px;
+    padding: 2rem;
+}
+
+.presenter-view {
+    width: 100%;
+    max-width: 100%;
+}
+
+.preview-panels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.preview-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.panel-label {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.panel-content {
+    padding: 1.5rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.preview-verse {
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.preview-verse.current {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.preview-reference {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    text-align: right;
+}
+
+.preview-empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.current-panel {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.light-mode .panel-label,
+body.light-mode .preview-verse,
+body.light-mode .preview-reference,
+body.light-mode .preview-empty {
+    color: #000000;
+}
+
+body.light-mode .preview-verse.current {
+    color: #000000;
+}
+
+body.light-mode .preview-reference {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+body.light-mode .preview-empty {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Horizontal Scripture Selector */
+.presenter-scripture-selector {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    z-index: 1001;
+}
+
+.reader-page.presenter-mode .presenter-scripture-selector {
+    display: block;
+}
+
+.reader-page.presenter-mode .controls {
+    bottom: 70px;
+}
+
+.horizontal-form {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.compact-select,
+.compact-input,
+.compact-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.compact-select {
+    min-width: 100px;
+}
+
+.compact-input {
+    width: 80px;
+}
+
+.compact-btn {
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.compact-select:focus,
+.compact-input:focus,
+.compact-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+    border-color: white;
+}
+
+.compact-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.compact-btn:active {
+    transform: translateY(0);
+}
+
+.compact-select option,
+.compact-select optgroup {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* ==========================================
    PRINT STYLES
    ========================================== */
 
 @media print {
     .controls,
     .theme-selector,
-    .submit-btn {
+    .submit-btn,
+    .presenter-scripture-selector {
         display: none;
     }
 

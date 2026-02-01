@@ -20,7 +20,9 @@ const state = {
     currentIndex: 0,
     currentReference: '',
     currentTheme: CONFIG.DEFAULT_THEME,
-    isLoading: false
+    isLoading: false,
+    presenterMode: false,
+    projectionWindow: null
 };
 
 // ==========================================
@@ -83,6 +85,11 @@ function handleThemeChange(event) {
     // Update button states
     elements.themeButtons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
+
+    // Update projection window theme if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        state.projectionWindow.document.body.className = theme;
+    }
 }
 
 // ==========================================
@@ -310,14 +317,22 @@ function showHomePage() {
 function navigatePrevious() {
     if (state.currentIndex > 0) {
         state.currentIndex--;
-        displayVerse();
+        if (state.presenterMode) {
+            displayPresenterView();
+        } else {
+            displayVerse();
+        }
     }
 }
 
 function navigateNext() {
     if (state.currentIndex < state.verses.length - 1) {
         state.currentIndex++;
-        displayVerse();
+        if (state.presenterMode) {
+            displayPresenterView();
+        } else {
+            displayVerse();
+        }
     }
 }
 
@@ -339,6 +354,14 @@ function handleFontSizeChange(event) {
         display.style.fontSize = `${size}rem`;
     });
 
+    // Update projection window if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        const projectionDisplay = state.projectionWindow.document.querySelector('.verse-display');
+        if (projectionDisplay) {
+            projectionDisplay.style.fontSize = `${size}rem`;
+        }
+    }
+
     // Update ARIA attribute
     event.target.setAttribute('aria-valuenow', size);
 }
@@ -351,6 +374,14 @@ function handleFontWeightChange(event) {
     displays.forEach(display => {
         display.style.fontWeight = weight;
     });
+
+    // Update projection window if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        const projectionDisplay = state.projectionWindow.document.querySelector('.verse-display');
+        if (projectionDisplay) {
+            projectionDisplay.style.fontWeight = weight;
+        }
+    }
 
     // Update ARIA attribute
     event.target.setAttribute('aria-valuenow', weight);
@@ -488,6 +519,33 @@ function initEventListeners() {
     elements.fontSizeSlider.addEventListener('input', handleFontSizeChange);
     elements.fontWeightSlider.addEventListener('input', handleFontWeightChange);
 
+    // Presenter mode buttons
+    const presenterBtn = document.getElementById('presenterBtn');
+    const exitPresenterBtn = document.getElementById('exitPresenterBtn');
+    const presenterForm = document.getElementById('presenterForm');
+
+    if (presenterBtn) {
+        presenterBtn.addEventListener('click', startPresenterMode);
+    }
+
+    if (exitPresenterBtn) {
+        exitPresenterBtn.addEventListener('click', stopPresenterMode);
+    }
+
+    if (presenterForm) {
+        presenterForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const translation = document.getElementById('presenterTranslation').value;
+            const book = document.getElementById('presenterBook').value;
+            const chapter = document.getElementById('presenterChapter').value;
+            const verseStart = document.getElementById('presenterVerseStart').value;
+            const verseEnd = document.getElementById('presenterVerseEnd').value;
+
+            await loadScripture(translation, book, chapter, verseStart, verseEnd);
+        });
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboardShortcuts);
 }
@@ -509,5 +567,157 @@ if (document.readyState === 'loading') {
     init();
 }
 
+// ==========================================
+// PRESENTER MODE
+// ==========================================
+
+function startPresenterMode() {
+    state.presenterMode = true;
+
+    // Open projection window
+    state.projectionWindow = window.open('', 'BibleProjection', 'fullscreen=yes,scrollbars=no,menubar=no,toolbar=no,location=no,status=no');
+
+    if (state.projectionWindow) {
+        // Build projection window HTML
+        state.projectionWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Bible Projection</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        padding: 3rem;
+                    }
+                    body.dark-mode { background: #1a1a1a; }
+                    body.light-mode { background: #ffffff; }
+                    body.gradient-mode { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+                    .verse-display {
+                        color: white;
+                        font-size: 4.5rem;
+                        line-height: 1.6;
+                        max-width: 1400px;
+                        width: 100%;
+                        font-weight: 900;
+                        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+                        margin-bottom: 1rem;
+                        text-align: center;
+                    }
+                    .reference {
+                        color: rgba(255, 255, 255, 0.9);
+                        font-size: 1.8rem;
+                        font-weight: 400;
+                        max-width: 1400px;
+                        width: 100%;
+                        text-align: right;
+                    }
+                    body.light-mode .verse-display,
+                    body.light-mode .reference { color: #000000; text-shadow: none; }
+                </style>
+            </head>
+            <body class="${state.currentTheme}">
+                <div id="projectionContent"></div>
+            </body>
+            </html>
+        `);
+        state.projectionWindow.document.close();
+
+        // Show presenter view
+        showPresenterView();
+        updateProjectionWindow();
+    } else {
+        alert('Please allow pop-ups to use presenter mode');
+        state.presenterMode = false;
+    }
+}
+
+function stopPresenterMode() {
+    state.presenterMode = false;
+    if (state.projectionWindow && !state.projectionWindow.closed) {
+        state.projectionWindow.close();
+    }
+    state.projectionWindow = null;
+    showReaderPage();
+}
+
+function showPresenterView() {
+    elements.readerPage.classList.add('presenter-mode');
+    displayPresenterView();
+}
+
+function displayPresenterView() {
+    if (!state.presenterMode) return;
+
+    const prevChunk = state.verses[state.currentIndex - 1];
+    const currentChunk = state.verses[state.currentIndex];
+    const nextChunk = state.verses[state.currentIndex + 1];
+
+    const container = elements.verseContainer;
+    container.innerHTML = `
+        <div class="presenter-view">
+            <div class="preview-panels">
+                <div class="preview-panel prev-panel">
+                    <div class="panel-label">Previous</div>
+                    <div class="panel-content">
+                        ${prevChunk ? `<div class="preview-verse">${escapeHtml(prevChunk.text)}</div>` : '<div class="preview-empty">No previous slide</div>'}
+                    </div>
+                </div>
+                <div class="preview-panel current-panel">
+                    <div class="panel-label">Current</div>
+                    <div class="panel-content">
+                        ${currentChunk ? `
+                            <div class="preview-verse current">${escapeHtml(currentChunk.text)}</div>
+                            <div class="preview-reference">${escapeHtml(state.currentReference)}</div>
+                        ` : '<div class="preview-empty">No current slide</div>'}
+                    </div>
+                </div>
+                <div class="preview-panel next-panel">
+                    <div class="panel-label">Next</div>
+                    <div class="panel-content">
+                        ${nextChunk ? `<div class="preview-verse">${escapeHtml(nextChunk.text)}</div>` : '<div class="preview-empty">No next slide</div>'}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    updateNavigationButtons();
+    updateProjectionWindow();
+}
+
+function updateProjectionWindow() {
+    if (!state.projectionWindow || state.projectionWindow.closed) {
+        stopPresenterMode();
+        return;
+    }
+
+    const chunk = state.verses[state.currentIndex];
+    if (!chunk) return;
+
+    const verseRef = formatVerseReference(chunk.verses);
+    const content = state.projectionWindow.document.getElementById('projectionContent');
+
+    if (content) {
+        content.innerHTML = `
+            <div class="verse-display" style="font-size: ${elements.fontSizeSlider.value}rem; font-weight: ${elements.fontWeightSlider.value};">
+                ${escapeHtml(chunk.text)}
+            </div>
+            <div class="reference">${escapeHtml(state.currentReference)} (${verseRef})</div>
+        `;
+    }
+
+    // Update theme
+    state.projectionWindow.document.body.className = state.currentTheme;
+}
+
 // Expose necessary functions to global scope for inline handlers
 window.showHomePage = showHomePage;
+window.startPresenterMode = startPresenterMode;
+window.stopPresenterMode = stopPresenterMode;

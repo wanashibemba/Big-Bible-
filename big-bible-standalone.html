@@ -636,13 +636,207 @@ body.light-mode .nav-btn:focus {
 }
 
 /* ==========================================
+   PRESENTER MODE
+   ========================================== */
+
+.presenter-btn {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: center;
+    width: auto;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.reader-page.presenter-mode .verse-container-wrapper {
+    margin-bottom: 200px;
+    padding: 2rem;
+}
+
+.presenter-view {
+    width: 100%;
+    max-width: 100%;
+}
+
+.preview-panels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.preview-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.panel-label {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.panel-content {
+    padding: 1.5rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.preview-verse {
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.preview-verse.current {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.preview-reference {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    text-align: right;
+}
+
+.preview-empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.current-panel {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.light-mode .panel-label,
+body.light-mode .preview-verse,
+body.light-mode .preview-reference,
+body.light-mode .preview-empty {
+    color: #000000;
+}
+
+body.light-mode .preview-verse.current {
+    color: #000000;
+}
+
+body.light-mode .preview-reference {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+body.light-mode .preview-empty {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Horizontal Scripture Selector */
+.presenter-scripture-selector {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    z-index: 1001;
+}
+
+.reader-page.presenter-mode .presenter-scripture-selector {
+    display: block;
+}
+
+.reader-page.presenter-mode .controls {
+    bottom: 70px;
+}
+
+.horizontal-form {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.compact-select,
+.compact-input,
+.compact-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.compact-select {
+    min-width: 100px;
+}
+
+.compact-input {
+    width: 80px;
+}
+
+.compact-btn {
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.compact-select:focus,
+.compact-input:focus,
+.compact-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+    border-color: white;
+}
+
+.compact-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.compact-btn:active {
+    transform: translateY(0);
+}
+
+.compact-select option,
+.compact-select optgroup {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* ==========================================
    PRINT STYLES
    ========================================== */
 
 @media print {
     .controls,
     .theme-selector,
-    .submit-btn {
+    .submit-btn,
+    .presenter-scripture-selector {
         display: none;
     }
 
@@ -853,7 +1047,106 @@ body.light-mode .nav-btn:focus {
             </button>
 
             <button class="nav-btn" id="homeBtn" aria-label="Return to home">Home</button>
+            <button class="nav-btn presenter-btn" id="presenterBtn" aria-label="Start presenter mode">Presenter Mode</button>
         </nav>
+
+        <!-- Horizontal Scripture Selector for Presenter Mode -->
+        <div class="presenter-scripture-selector" id="presenterScriptureSelector">
+            <form id="presenterForm" class="horizontal-form">
+                <select id="presenterTranslation" class="compact-select" aria-label="Select translation">
+                    <optgroup label="Popular">
+                        <option value="de4e12af7f28f599-02">NIV</option>
+                        <option value="f421fe261da7624f-01">ESV</option>
+                        <option value="7142879509583d59-01">NLT</option>
+                        <option value="de4e12af7f28f599-01" selected>KJV</option>
+                        <option value="2bcf7795d310e29c-01">NKJV</option>
+                        <option value="01b29f4b342acc35-01">CSB</option>
+                        <option value="65eec8e0b60e656b-01">NASB</option>
+                    </optgroup>
+                    <optgroup label="Free">
+                        <option value="9879dbb7cfe39e4d-01">WEB</option>
+                        <option value="bba9f40183526463-01">ASV</option>
+                        <option value="06125adad2d5898a-01">BBE</option>
+                    </optgroup>
+                </select>
+
+                <select id="presenterBook" class="compact-select" aria-label="Select book">
+                    <option value="Genesis">Genesis</option>
+                    <option value="Exodus">Exodus</option>
+                    <option value="Leviticus">Leviticus</option>
+                    <option value="Numbers">Numbers</option>
+                    <option value="Deuteronomy">Deuteronomy</option>
+                    <option value="Joshua">Joshua</option>
+                    <option value="Judges">Judges</option>
+                    <option value="Ruth">Ruth</option>
+                    <option value="1Samuel">1 Samuel</option>
+                    <option value="2Samuel">2 Samuel</option>
+                    <option value="1Kings">1 Kings</option>
+                    <option value="2Kings">2 Kings</option>
+                    <option value="1Chronicles">1 Chronicles</option>
+                    <option value="2Chronicles">2 Chronicles</option>
+                    <option value="Ezra">Ezra</option>
+                    <option value="Nehemiah">Nehemiah</option>
+                    <option value="Esther">Esther</option>
+                    <option value="Job">Job</option>
+                    <option value="Psalms">Psalms</option>
+                    <option value="Proverbs">Proverbs</option>
+                    <option value="Ecclesiastes">Ecclesiastes</option>
+                    <option value="SongofSolomon">Song of Solomon</option>
+                    <option value="Isaiah">Isaiah</option>
+                    <option value="Jeremiah">Jeremiah</option>
+                    <option value="Lamentations">Lamentations</option>
+                    <option value="Ezekiel">Ezekiel</option>
+                    <option value="Daniel">Daniel</option>
+                    <option value="Hosea">Hosea</option>
+                    <option value="Joel">Joel</option>
+                    <option value="Amos">Amos</option>
+                    <option value="Obadiah">Obadiah</option>
+                    <option value="Jonah">Jonah</option>
+                    <option value="Micah">Micah</option>
+                    <option value="Nahum">Nahum</option>
+                    <option value="Habakkuk">Habakkuk</option>
+                    <option value="Zephaniah">Zephaniah</option>
+                    <option value="Haggai">Haggai</option>
+                    <option value="Zechariah">Zechariah</option>
+                    <option value="Malachi">Malachi</option>
+                    <option value="Matthew">Matthew</option>
+                    <option value="Mark">Mark</option>
+                    <option value="Luke">Luke</option>
+                    <option value="John" selected>John</option>
+                    <option value="Acts">Acts</option>
+                    <option value="Romans">Romans</option>
+                    <option value="1Corinthians">1 Corinthians</option>
+                    <option value="2Corinthians">2 Corinthians</option>
+                    <option value="Galatians">Galatians</option>
+                    <option value="Ephesians">Ephesians</option>
+                    <option value="Philippians">Philippians</option>
+                    <option value="Colossians">Colossians</option>
+                    <option value="1Thessalonians">1 Thessalonians</option>
+                    <option value="2Thessalonians">2 Thessalonians</option>
+                    <option value="1Timothy">1 Timothy</option>
+                    <option value="2Timothy">2 Timothy</option>
+                    <option value="Titus">Titus</option>
+                    <option value="Philemon">Philemon</option>
+                    <option value="Hebrews">Hebrews</option>
+                    <option value="James">James</option>
+                    <option value="1Peter">1 Peter</option>
+                    <option value="2Peter">2 Peter</option>
+                    <option value="1John">1 John</option>
+                    <option value="2John">2 John</option>
+                    <option value="3John">3 John</option>
+                    <option value="Jude">Jude</option>
+                    <option value="Revelation">Revelation</option>
+                </select>
+
+                <input type="number" id="presenterChapter" placeholder="Ch" min="1" value="3" class="compact-input" aria-label="Chapter">
+                <input type="number" id="presenterVerseStart" placeholder="From" min="1" value="16" class="compact-input" aria-label="Starting verse">
+                <input type="number" id="presenterVerseEnd" placeholder="To" min="1" value="17" class="compact-input" aria-label="Ending verse">
+
+                <button type="submit" class="compact-btn">Load</button>
+                <button type="button" class="compact-btn" id="exitPresenterBtn">Exit Presenter</button>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>
@@ -880,7 +1173,9 @@ const state = {
     currentIndex: 0,
     currentReference: '',
     currentTheme: CONFIG.DEFAULT_THEME,
-    isLoading: false
+    isLoading: false,
+    presenterMode: false,
+    projectionWindow: null
 };
 
 // ==========================================
@@ -943,6 +1238,11 @@ function handleThemeChange(event) {
     // Update button states
     elements.themeButtons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
+
+    // Update projection window theme if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        state.projectionWindow.document.body.className = theme;
+    }
 }
 
 // ==========================================
@@ -1170,14 +1470,22 @@ function showHomePage() {
 function navigatePrevious() {
     if (state.currentIndex > 0) {
         state.currentIndex--;
-        displayVerse();
+        if (state.presenterMode) {
+            displayPresenterView();
+        } else {
+            displayVerse();
+        }
     }
 }
 
 function navigateNext() {
     if (state.currentIndex < state.verses.length - 1) {
         state.currentIndex++;
-        displayVerse();
+        if (state.presenterMode) {
+            displayPresenterView();
+        } else {
+            displayVerse();
+        }
     }
 }
 
@@ -1199,6 +1507,14 @@ function handleFontSizeChange(event) {
         display.style.fontSize = `${size}rem`;
     });
 
+    // Update projection window if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        const projectionDisplay = state.projectionWindow.document.querySelector('.verse-display');
+        if (projectionDisplay) {
+            projectionDisplay.style.fontSize = `${size}rem`;
+        }
+    }
+
     // Update ARIA attribute
     event.target.setAttribute('aria-valuenow', size);
 }
@@ -1211,6 +1527,14 @@ function handleFontWeightChange(event) {
     displays.forEach(display => {
         display.style.fontWeight = weight;
     });
+
+    // Update projection window if in presenter mode
+    if (state.presenterMode && state.projectionWindow && !state.projectionWindow.closed) {
+        const projectionDisplay = state.projectionWindow.document.querySelector('.verse-display');
+        if (projectionDisplay) {
+            projectionDisplay.style.fontWeight = weight;
+        }
+    }
 
     // Update ARIA attribute
     event.target.setAttribute('aria-valuenow', weight);
@@ -1348,6 +1672,33 @@ function initEventListeners() {
     elements.fontSizeSlider.addEventListener('input', handleFontSizeChange);
     elements.fontWeightSlider.addEventListener('input', handleFontWeightChange);
 
+    // Presenter mode buttons
+    const presenterBtn = document.getElementById('presenterBtn');
+    const exitPresenterBtn = document.getElementById('exitPresenterBtn');
+    const presenterForm = document.getElementById('presenterForm');
+
+    if (presenterBtn) {
+        presenterBtn.addEventListener('click', startPresenterMode);
+    }
+
+    if (exitPresenterBtn) {
+        exitPresenterBtn.addEventListener('click', stopPresenterMode);
+    }
+
+    if (presenterForm) {
+        presenterForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const translation = document.getElementById('presenterTranslation').value;
+            const book = document.getElementById('presenterBook').value;
+            const chapter = document.getElementById('presenterChapter').value;
+            const verseStart = document.getElementById('presenterVerseStart').value;
+            const verseEnd = document.getElementById('presenterVerseEnd').value;
+
+            await loadScripture(translation, book, chapter, verseStart, verseEnd);
+        });
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', handleKeyboardShortcuts);
 }
@@ -1369,8 +1720,160 @@ if (document.readyState === 'loading') {
     init();
 }
 
+// ==========================================
+// PRESENTER MODE
+// ==========================================
+
+function startPresenterMode() {
+    state.presenterMode = true;
+
+    // Open projection window
+    state.projectionWindow = window.open('', 'BibleProjection', 'fullscreen=yes,scrollbars=no,menubar=no,toolbar=no,location=no,status=no');
+
+    if (state.projectionWindow) {
+        // Build projection window HTML
+        state.projectionWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Bible Projection</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        padding: 3rem;
+                    }
+                    body.dark-mode { background: #1a1a1a; }
+                    body.light-mode { background: #ffffff; }
+                    body.gradient-mode { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+                    .verse-display {
+                        color: white;
+                        font-size: 4.5rem;
+                        line-height: 1.6;
+                        max-width: 1400px;
+                        width: 100%;
+                        font-weight: 900;
+                        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+                        margin-bottom: 1rem;
+                        text-align: center;
+                    }
+                    .reference {
+                        color: rgba(255, 255, 255, 0.9);
+                        font-size: 1.8rem;
+                        font-weight: 400;
+                        max-width: 1400px;
+                        width: 100%;
+                        text-align: right;
+                    }
+                    body.light-mode .verse-display,
+                    body.light-mode .reference { color: #000000; text-shadow: none; }
+                </style>
+            </head>
+            <body class="${state.currentTheme}">
+                <div id="projectionContent"></div>
+            </body>
+            </html>
+        `);
+        state.projectionWindow.document.close();
+
+        // Show presenter view
+        showPresenterView();
+        updateProjectionWindow();
+    } else {
+        alert('Please allow pop-ups to use presenter mode');
+        state.presenterMode = false;
+    }
+}
+
+function stopPresenterMode() {
+    state.presenterMode = false;
+    if (state.projectionWindow && !state.projectionWindow.closed) {
+        state.projectionWindow.close();
+    }
+    state.projectionWindow = null;
+    showReaderPage();
+}
+
+function showPresenterView() {
+    elements.readerPage.classList.add('presenter-mode');
+    displayPresenterView();
+}
+
+function displayPresenterView() {
+    if (!state.presenterMode) return;
+
+    const prevChunk = state.verses[state.currentIndex - 1];
+    const currentChunk = state.verses[state.currentIndex];
+    const nextChunk = state.verses[state.currentIndex + 1];
+
+    const container = elements.verseContainer;
+    container.innerHTML = `
+        <div class="presenter-view">
+            <div class="preview-panels">
+                <div class="preview-panel prev-panel">
+                    <div class="panel-label">Previous</div>
+                    <div class="panel-content">
+                        ${prevChunk ? `<div class="preview-verse">${escapeHtml(prevChunk.text)}</div>` : '<div class="preview-empty">No previous slide</div>'}
+                    </div>
+                </div>
+                <div class="preview-panel current-panel">
+                    <div class="panel-label">Current</div>
+                    <div class="panel-content">
+                        ${currentChunk ? `
+                            <div class="preview-verse current">${escapeHtml(currentChunk.text)}</div>
+                            <div class="preview-reference">${escapeHtml(state.currentReference)}</div>
+                        ` : '<div class="preview-empty">No current slide</div>'}
+                    </div>
+                </div>
+                <div class="preview-panel next-panel">
+                    <div class="panel-label">Next</div>
+                    <div class="panel-content">
+                        ${nextChunk ? `<div class="preview-verse">${escapeHtml(nextChunk.text)}</div>` : '<div class="preview-empty">No next slide</div>'}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    updateNavigationButtons();
+    updateProjectionWindow();
+}
+
+function updateProjectionWindow() {
+    if (!state.projectionWindow || state.projectionWindow.closed) {
+        stopPresenterMode();
+        return;
+    }
+
+    const chunk = state.verses[state.currentIndex];
+    if (!chunk) return;
+
+    const verseRef = formatVerseReference(chunk.verses);
+    const content = state.projectionWindow.document.getElementById('projectionContent');
+
+    if (content) {
+        content.innerHTML = `
+            <div class="verse-display" style="font-size: ${elements.fontSizeSlider.value}rem; font-weight: ${elements.fontWeightSlider.value};">
+                ${escapeHtml(chunk.text)}
+            </div>
+            <div class="reference">${escapeHtml(state.currentReference)} (${verseRef})</div>
+        `;
+    }
+
+    // Update theme
+    state.projectionWindow.document.body.className = state.currentTheme;
+}
+
 // Expose necessary functions to global scope for inline handlers
 window.showHomePage = showHomePage;
+window.startPresenterMode = startPresenterMode;
+window.stopPresenterMode = stopPresenterMode;
     </script>
 </body>
 </html>
