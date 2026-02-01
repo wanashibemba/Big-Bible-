@@ -4,8 +4,10 @@
 
 const CONFIG = {
     MAX_CHARS: 280,
+    // API.bible configuration (2500+ translations including NIV, ESV, NLT, etc.)
     API_BASE_URL: 'https://api.scripture.api.bible/v1',
     API_KEY: 'JbTbOtLeQo4RjUBOHt2Ms',
+    USE_API_BIBLE: true, // Set to false to use free bible-api.com (KJV only)
     DEFAULT_THEME: 'gradient-mode',
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000
@@ -146,21 +148,41 @@ async function fetchWithRetry(url, attempts = CONFIG.RETRY_ATTEMPTS) {
     for (let i = 0; i < attempts; i++) {
         try {
             const headers = {
-                'api-key': CONFIG.API_KEY
+                'api-key': CONFIG.API_KEY,
+                'Accept': 'application/json'
             };
 
-            const response = await fetch(url, { headers });
+            console.log('Making request to:', url);
+            console.log('With headers:', headers);
+
+            const response = await fetch(url, {
+                headers,
+                mode: 'cors'
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
             if (!response.ok) {
+                const errorBody = await response.text();
+                console.error('Error response body:', errorBody);
+
                 if (response.status === 401) {
-                    throw new Error('Invalid API key. Please check your API.bible dashboard.');
+                    throw new Error('Invalid API key. Please verify your key at https://scripture.api.bible/admin');
                 }
-                throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.status === 403) {
+                    throw new Error('Access forbidden. Check domain whitelist in API.bible dashboard.');
+                }
+                if (response.status === 429) {
+                    throw new Error('Rate limit exceeded. Please wait a few minutes and try again.');
+                }
+                throw new Error(`HTTP error! status: ${response.status} - ${errorBody}`);
             }
 
             return await response.json();
 
         } catch (error) {
+            console.error(`Attempt ${i + 1} failed:`, error);
             if (i === attempts - 1) throw error;
 
             await new Promise(resolve =>
@@ -403,15 +425,63 @@ function handleError(error) {
     console.error('Error stack:', error.stack);
 
     const errorMessage = getErrorMessage(error);
+    const troubleshootingSteps = getTroubleshootingSteps(error);
+
     elements.verseContainer.innerHTML = `
         <div class="loading">
             ${escapeHtml(errorMessage)}
             <br><br>
-            <small style="color: rgba(255,255,255,0.7); font-size: 0.8rem;">Error: ${escapeHtml(error.message)}</small>
+            <small style="color: rgba(255,255,255,0.7); font-size: 0.8rem;">
+                Error: ${escapeHtml(error.message)}
+            </small>
+            ${troubleshootingSteps ? `
+                <br><br>
+                <div style="text-align: left; max-width: 600px; margin: 0 auto; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                    <strong>💡 Troubleshooting Steps:</strong>
+                    ${troubleshootingSteps}
+                </div>
+            ` : ''}
             <br><br>
             <button class="nav-btn" onclick="showHomePage()">Return Home</button>
         </div>
     `;
+}
+
+function getTroubleshootingSteps(error) {
+    if (error.message.includes('Invalid API key')) {
+        return `
+            <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>Visit <a href="https://scripture.api.bible/admin" target="_blank" style="color: #fff; text-decoration: underline;">scripture.api.bible/admin</a></li>
+                <li>Verify your API key is ACTIVE (not pending)</li>
+                <li>Copy the exact key and update it in script.js</li>
+                <li>Check if there's a "Domain Whitelist" - add: wanashibemba.github.io</li>
+                <li>Open browser console (F12) to see detailed error logs</li>
+            </ol>
+        `;
+    }
+
+    if (error.message.includes('Access forbidden') || error.message.includes('403')) {
+        return `
+            <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>Your domain might not be whitelisted in API.bible dashboard</li>
+                <li>Go to <a href="https://scripture.api.bible/admin" target="_blank" style="color: #fff; text-decoration: underline;">scripture.api.bible/admin</a></li>
+                <li>Look for "Allowed Domains" or "CORS Settings"</li>
+                <li>Add: wanashibemba.github.io and *.github.io</li>
+            </ol>
+        `;
+    }
+
+    if (error.message.includes('Rate limit')) {
+        return `
+            <ol style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>You've exceeded the API rate limit</li>
+                <li>Wait 5-10 minutes before trying again</li>
+                <li>Check your usage at <a href="https://scripture.api.bible/admin" target="_blank" style="color: #fff; text-decoration: underline;">scripture.api.bible/admin</a></li>
+            </ol>
+        `;
+    }
+
+    return null;
 }
 
 function getErrorMessage(error) {
